@@ -4,8 +4,8 @@
 
 ## Структура проекта
 
-- `configs/task1-haproxy.cfg` — конфигурация HAProxy для задачи 1
-- `configs/task2-haproxy.cfg` — конфигурация HAProxy для задачи 2
+- [configs/task1-haproxy.cfg](configs/task1-haproxy.cfg) — конфигурация HAProxy для задачи 1
+- [configs/task2-haproxy.cfg](configs/task2-haproxy.cfg) — конфигурация HAProxy для задачи 2
 - `scripts/start-task1.sh` — запуск Python-серверов для задачи 1
 - `scripts/start-task2.sh` — запуск Python-серверов для задачи 2
 - `run/` — PID-файлы запущенных процессов
@@ -19,18 +19,9 @@
 Настроить HAProxy для балансировки TCP-запросов между двумя Python-серверами.
 
 ### Конфигурация
-Файл: `configs/task1-haproxy.cfg`
+[Файл конфигурации задачи 1](configs/task1-haproxy.cfg)
 
-```haproxy
-defaults
-    mode tcp
-
-backend task1_python_servers
-    mode tcp
-    balance roundrobin
-    server py1 127.0.0.1:8001
-    server py2 127.0.0.1:8002
-```
+В конфигурации используется режим `tcp`, алгоритм балансировки `roundrobin` и два backend-сервера на портах `8001` и `8002`.
 
 ### Запуск
 В одном терминале запустите сервисы Python:
@@ -82,23 +73,9 @@ port=8002
 Настроить HAProxy для HTTP-балансировки с проверкой заголовка `Host` и распределением запросов между тремя серверами с разными весами.
 
 ### Конфигурация
-Файл: `configs/task2-haproxy.cfg`
+[Файл конфигурации задачи 2](configs/task2-haproxy.cfg)
 
-```haproxy
-frontend task2_http_front
-    bind *:8081
-    mode http
-    acl host_example hdr(host) -i example.local example.local:8081
-    http-request deny deny_status 403 unless host_example
-    use_backend task2_python_servers if host_example
-
-backend task2_python_servers
-    mode http
-    balance roundrobin
-    server py1 127.0.0.1:8011 weight 2
-    server py2 127.0.0.1:8012 weight 3
-    server py3 127.0.0.1:8013 weight 4
-```
+В конфигурации используется HTTP-режим, ACL по заголовку `Host`, отказ `403 Forbidden` для запросов без нужного домена и backend из трёх серверов с весами `2`, `3` и `4`.
 
 ### Запуск
 В одном терминале запустите Python-сервера:
@@ -156,7 +133,6 @@ curl -i http://127.0.0.1:8081/
 - Все команды запуска предполагают, что вы находитесь в корневой папке репозитория.
 - Если `sudo haproxy -f ...` запрашивает пароль, введите пароль пользователя для выполнения команды от имени root.
 - `REPORT.md` объединён в этот `README.md` и дополнительный отчёт не требуется.
-
 
 
 
